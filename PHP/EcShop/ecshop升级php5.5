@@ -1,0 +1,81 @@
+<?php
+
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+cls_image::gd_version()错误： 
+    修改文件cls_image.php中的678行：
+        static function gd_version()
+Strict Standards: Only variables should be passed by reference错误：
+    cls_template.php
+    423行：$tag_sel = array_shift(explode(' ', $tag));
+        修改为：
+        $tag_arr=explode(' ', $tag);
+        $tag_sel = array_shift($tag_arr);
+    lib_main.php
+    function get_dyna_libs($theme, $tmp)1327
+        //$ext = end(explode('.', $tmp));
+        $ext_arr = explode('.', $tmp);
+        $ext = end($ext_arr);
+Deprecated: preg_replace(): The /e modifier is deprecated, use preg_replace_callback instead错误：
+    cls_template.php
+    function fetch_str()函数里修改300行
+        //return preg_replace("/{([^\}\{\n]*)}/e", "\$this->select('\\1');", $source);
+         return preg_replace_callback("/{([^\}\{\n]*)}/", function($r) { return $this->select($r[1]); }, $source);
+    function smarty_prefilter_preCompile()函数修改1074
+        //$source      = preg_replace($pattern, $replacement, $source);
+        source = preg_replace_callback($pattern,function($match){ return '{include file="'.strtolower($match[1]).'"}';},$source);
+    function get_val()函数修改554行
+        //$val = preg_replace("/\[([^\[\]]*)\]/eis", "'.'.str_replace('$','\$','\\1')", $val);
+        $val = preg_replace_callback("/\[([^\[\]]*)\]/is",function($match){ return ".".str_replace('$','$',$match[1]);},$val);
+    function select()函数495
+        //$out = "<?php \n" . '$k = ' . preg_replace("/(\'\\$[^,]+)/e" , "stripslashes(trim('\\1','\''));", var_export($t, true)) . ";\n";
+        $out = "<?php \n" . '$k = ' . preg_replace_callback("/(\'\\$[^,]+)/" ,function($match){ return stripslashes(trim($match[1]),'\'');} , var_export($t, true)) . ";\n";
+Strict Standards:mktime():You should be using the time() function instead
+    直接用time 代替mktime即可。        
+Strict Standards:Redefining already defined constructor for class
+    将同名构造函数放在__construct()之后。
+    从PHP5.4开始，对这两个函数出现的顺序做了最严格的定义，必须是__construct()在前，同名函数在后。
+
+    
+    
+    
+涉及到的修改文件有
+文件名	文件大小	最后修改时间	状态
+admin/			
+被修改:5			
+cloud.php	“8167 Bytes”	2016/2/3 20:56	被修改
+privilege.php	“25918 Bytes”	2014/12/12 11:14	被修改
+shop_config.php	“13702 Bytes”	2016/2/3 20:56	被修改
+sms_url.php	“1186 Bytes”	2016/2/3 20:56	被修改
+sql.php	“4634 Bytes”	2014/12/12 11:19	被修改
+admin/includes/			
+被修改:1			
+cls_sql_dump.php	“14094 Bytes”	2016/2/6 18:39	被修改
+includes/			
+被修改:6			
+cls_captcha.php	“8734 Bytes”	2016/2/3 20:59	被修改
+cls_image.php	“23083 Bytes”	2016/2/2 23:10	被修改
+cls_mysql.php	“27347 Bytes”	2016/2/6 18:40	被修改
+cls_template.php	“44542 Bytes”	2016/2/6 19:49	被修改
+lib.debug.php	“25893 Bytes”	2016/2/2 21:59	被修改
+lib_main.php	“67400 Bytes”	2016/2/2 22:52	被修改
+includes/modules/payment/			
+被修改:15			
+alipay.php	“6661 Bytes”	2016/2/6 18:10	被修改
+balance.php	“2146 Bytes”	2016/2/6 18:10	被修改
+bank.php	“2091 Bytes”	2016/2/6 18:10	被修改
+cappay.php	“12133 Bytes”	2016/2/6 18:10	被修改
+chinabank.php	“5521 Bytes”	2016/2/6 18:10	被修改
+cod.php	“2208 Bytes”	2016/2/6 18:10	被修改
+epay.php	“5708 Bytes”	2016/2/6 18:10	被修改
+ips.php	“5554 Bytes”	2016/2/6 18:11	被修改
+kuaiqian.php	“13153 Bytes”	2016/2/6 18:11	被修改
+paypal.php	“8200 Bytes”	2016/2/6 18:11	被修改
+paypal_ec.php	“8429 Bytes”	2016/2/6 18:11	被修改
+post.php	“2134 Bytes”	2016/2/6 18:11	被修改
+shenzhou.php	“15209 Bytes”	2016/2/6 18:11	被修改
+tenpay.php	“8425 Bytes”	2016/2/6 18:12	被修改
+tenpayc2c.php	“8679 Bytes”	2016/2/6 18:12	被修改
