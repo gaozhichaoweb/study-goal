@@ -71,9 +71,9 @@ Logback：
 			</root>
 			<!--日志异步到数据库 -->
 			<!--<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">-->
-				<!--&lt;!&ndash;日志异步到数据库 &ndash;&gt;-->
+				<!--日志异步到数据库-->
 				<!--<connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">-->
-					<!--&lt;!&ndash;连接池 &ndash;&gt;-->
+					<!--连接池-->
 					<!--<dataSource class="com.mchange.v2.c3p0.ComboPooledDataSource">-->
 						<!--<driverClass>com.mysql.jdbc.Driver</driverClass>-->
 						<!--<url>jdbc:mysql://127.0.0.1:3306/databaseName</url>-->
