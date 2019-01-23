@@ -32,6 +32,10 @@
 
 	一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射
 
+> PageHelper
+
+	MyBatis框架的分页插件,文档参见https://pagehelper.github.io/
+
 > Hibernate Validation 6.0
 
 	Bean 验证框架，用Annotations 给类或者类的属性加上约束(constraint)。创建实体类的时候生成数据表的时候用
