@@ -502,13 +502,165 @@ Java核心技术卷I
 第五章 继承
 
 {
-	
+	利用继承，可以基于已存在的类构造一个新类
+	继承已存在的类就是复用这些类的方法和域，在此基础上还可以添加一些新的方法和域，以满足新的要求
+	5.1 类、超类和子类
+		5.1.1 定义子类
+			关键字extends表示继承
+			public class Manager extends Employee{
+				publilc double getSalary(){
+					double baseSalary = super.getSalary();  //这里是调取的超类的私有属性
+				}
+			}
+			Employee为超类、基类或父类，Manager为子类、派生类
+			Java一般称为超类和子类
+			在通过扩展超类定义子类的时候，仅需要指出子类与超类的不同之处
+		5.1.2 覆盖方法
+			超类中的方法对子类并不一定适用，为此，需要提供一个新的方法来覆盖(override)超类中的这个方法
+			子类不能直接访问超类的私有属性，可以适用特定的关键字super解决
+				super.getSalary();
+		5.1.3 子类构造器
+		5.1.4 继承层次
+			继承并并仅限于一个层次，一个祖先类可以拥有多个子孙继承链
+			Java不支持多继承
+		5.1.5 多态
+		5.1.6 理解方法调用
+			编译器查看对象的声明类型和方法名
+			编译器查看调用方法时提供的参数类型来匹配方法
+			如果是private方法、static方法、final方法或者构造器，那么编译器将可以准确的知道该调用那个方法，这种方法叫做静态绑定
+			当程序运行，并采用动态绑定调用方法时，虚拟机一定调用与所引用的实际类型最合适的那个类的方法
+			每次调用方法都要进行搜索，时间开销很大
+			所以虚拟机预先为每个类创建类一个方法表，其中列出类所有方法的前面和实际调用的方法
+			在真正调用方法的时候，虚拟机仅查找这个表就行了
+		5.1.7 阻止继承：final类和方法
+			有时候不希望人们利用某个类定义子类，不允许扩展的类被称为final类
+			public final class Executive extends Manager{}
+			类中的特定方法也可以被声明为final,如果这样做，子类就不能覆盖这个方法
+			public final String getName(){
+				
+			}
+			将方法或类声明为final主要目的是：确保他们不会在子类中改变语义
+		5.1.8 强制类型转换
+			将某个类的对象引用转换成另外一个类的对象引用
+				Manager boss = (Manager) staff[0];
+		5.1.9 抽象类abstract
+			从某种角度看，祖先类更加通用，只将它作为派生其他类的基类，而不想使用特定的实例类。
+			抽象类不能被实例化，将一个类声明类abstract，就不能创建这个类的对象
+			publilc abstract class Person{
+				public abstract String getDescription();
+			}
+	5.2 Object: 所有类的超类
+		Object类是Java中所有类的始祖，每个类都是由它扩展而来的
+		但是不需要继承该类，如果没有明确的指出超类，Object类就被认为是这个类的超类
+		在Java种只有基本类型不是对象
+		5.2.1 equals方法
+			用于检测一个对象是否等于另外一个对象，即判断两个对象是否有相同的引用
+		5.2.2 相等测试与继承
+		5.2.3 hashCode方法
+			散列码是由对象导出的一个整型值，没有规律
+			String s ="ok";
+			System.out.println(s.hashCode);
+			StringBuilder sb = new StringBuilder(s);
+			System.out.println(sb.hashCode);
+			如果要重新定义equals方法，就必须重新定义hashCode方法，以便用户可以将对象插入到散列表中
+			hashCode()返回值是任意整数
+		5.2.4 toString方法
+			用于返回表示对象值的字符串
+			可以作为调试数据用
+	5.3 泛型数组列表
+		ArrayList类使用起来有点像数组，但是在添加或删除元素时，具有自动调节数组容量的公共
+		ArrayList是一个采用类型参数的泛型类，为了指定数组列表保存的元素对象类型
+		需要用一对尖括号将类名括起来加在后面
+			ArrayList<Employee> staff = new ArrayList<Employee>();
+		使用add方法可以将元素添加到数组列表中
+			staff.add(new Employee("tony",22));
+		API:
+			ArrayList<E>()  //构造一个空数组列表
+			ArrayList<E>(100) //用指定容量构造一个空数组
+			boolean add(E obj) //在数组列表的尾端添加一个元素
+			int size()  //返回数组元素个数
+			void trimToSize()
+		5.3.1 访问数组列表元素
+			ArrayList并不是Java程序设计语言的一部分，它只是由某些人编写且被放在标准库中的一个实用类
+			使用get和set方法实现访问或改变数组元素的操作
+			例子：
+				//设置第i个元素,主要类型
+				Employee harry = new Employee("harry",22);
+				staff.set(i,harry);
+				//获取数组列表的元素
+				Employee e = staff.get(i);
+				//数组中间插入元素
+				int n = staff.size()/2;
+				staff.add(n,e);
+				//删除一个元素，返回值是被删除的元素
+				Employee e = staff.remove(n); 
+				//遍历数组的两种方法
+				for(Employee e: staff){
+					//do
+				}
+				for(int i=0;i<staff.size();i++){
+					Employee e = staff.get(i);
+					//do
+				}
+		5.3.2 类型化与原始数组列表的兼容性
+	5.4 对象包装器与自动装箱
+		有时候需要将int这样的基本类型转换为对象
+		所有的基本类型都有一个与之对应的类
+		Integer类对应基本类型int,
+		Integer Long Float Double Short Byte Character Void Boolean
+		通常这些类称为包装器(wrapper)
+		对象包装器类是不可变得，也是final类，因此不能定义它们的子类
+		自动装箱autoboxing
+			调用list.add(3)
+			将自动变换为list.add(Integer.valueOf(3))
+		自动拆箱
+			int n = list.get(i);
+			翻译成
+			int n = list.get(i).intValue();
+		API:
+			int intValue()--以int的形式返回Integer对象的值
+			static String toString(int i)
+			static int parseInt(String s)
+			static Integer valueOf(String s)
+	5.5 参数数量可变的方法
+		System.out.printf("%d %s",n,"hello");
+		后面的参数是可变的
+	5.6 枚举类
+		public enum Size {SMALL,MEDIUM,LARGE}
+		比较两个枚举类型的值时，永远不要调用equals,而直接使用==就可以了
+	5.7 反射
+		反射库reflection library提供了一个分叉丰富的工具集，以便编写能够动态操纵java代码的程序
+		这项功能被大量地应用于javabeans中，它是Java组件的体系结构
+		特别是在设计或运行中添加新类时，能够快速地应用开发工具动态地查询新添加类的能力
+		能够分析类能力的程序称为反射(reflective),功能如下：
+			在运行时分析类的能力
+			在运行时查看对象
+			实现通用的数组操作代码
+			利用Method对象，这个对象很像C++中的函数指针
+		使用它的主要人员是工具构造者，而不是应用程序员
+		
 }
 
 第六章 接口、lambda表达式与内部类
 
 {
-	
+	6.1 接口
+		6.1.1 接口的概念
+			接口interface技术主要用来描述类具有什么功能，而并不给出每个功能的具体实现
+			一个类可以实现implement一个或多个接口
+			在Java程序设计语言中，接口不是类，而是对类的一组需求描述，这些类需要遵从接口描述的统一格式进行定义
+			接口可能包含多个方法，还可以定义常量
+			但接口决不能含有实例域
+			在Java SE 8 之前，也不能在接口中实现方法
+			提供实例域和方法实现的任务应该由实现接口的那个类来完成
+		6.1.2 接口的特性
+			接口不是类，尤其不能使用new运算符实例化一个接口
+			尽管不能构造接口的对象，却能声明接口的变量
+				private UserMapper userMapper;
+	6.2 接口示例
+	6.3 lambda表达式
+	6.4 内部类
+	6.5 代理
 }
 
 第七章 异常、断言和日志
