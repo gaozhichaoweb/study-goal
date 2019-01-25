@@ -657,28 +657,335 @@ Java核心技术卷I
 			接口不是类，尤其不能使用new运算符实例化一个接口
 			尽管不能构造接口的对象，却能声明接口的变量
 				private UserMapper userMapper;
+			接口可以被继承
+			接口里可以包含常量
+		6.1.3 接口与抽象类
+		6.1.4 静态方法
+			Java SE8允许在接口中增加静态方法
+			这样做合法，但是有违接口作为抽象规范的初衷
+			通常都是将静态方法放在伴随类中
+		6.1.5 默认方法
+			可以为接口提供一个默认实现，必须用default修饰符标记
+			public interface A{
+				default int b(){
+					//dosometing
+				}
+			}
+			默认方法的一个重要用法是"接口演化"
+		6.1.6 解决默认方法冲突
 	6.2 接口示例
+		6.2.1 接口与回调
+			回调(callback)是一种常见的程序设计模式
+			实例参见v1ch06/timer/TimerTest.java
+		6.2.2 Comparator接口
+		6.2.3 对象克隆
+			了解
 	6.3 lambda表达式
+		6.3.1 为什么引入lambda表达式
+			lambda表达式是一个可传递的代码块，可以在以后执行一次或多次
+			将一个代码块传递到某个对象，在Java中并不容易，不能直接传递代码块
+			Java是一种面向对象语音，所以必须构造一个对象，这个对象的类需要有一个方法能包含所需代码。
+		6.3.2 lambda语法
+			lambda表达式就是一个代码块，以及必须传入代码的变量规范
+			(String first, String second)->{
+				if(first.length() < second.length()){
+					return -1;
+				}else{
+					return 0;
+				}
+			}
+			表达式形式：参数，箭头(->)以及一个表达式
+		6.3.3 函数式接口
 	6.4 内部类
+		内部类是定义在另一个类中的类
+			内部类方法可以访问该类定义所在的作用域中的数据，包括私有数据
+			内部类可以对同一个包中的其他类隐藏起来
+			当想要定义一个回调函数且不想编写大量代码时，使用匿名(anonymous)内部类比较便捷
+			
 	6.5 代理
+		利用代理可以在运行时创建一个实现了一组给定接口的新类
+		这种功能只有在编译时无法确定需要实现那个接口时才有必要使用
+		对于应用程序设计人员来说，遇到的情况很少
 }
 
 第七章 异常、断言和日志
 
 {
-	
+	7.1 处理错误
+		如果出现错误而使得某些操作没有完成，程序应该：
+			返回到一种安全状态，并能够让用户执行一些其他的命令
+			或者允许用户保存所有操作的结果，并以妥善的方式终止程序
+		需要关注的问题
+			用户输入错误
+			设备错误
+			物理限制
+			代码错误
+		7.1.1 异常分类
+			在Java中异常对象都是派生于Throwable类的一个实例，用户可以创建自己的异常类
+			所有异常都是Throwable继承而来，但在下一层立即分解为两个分支
+				Error
+					Error类层次结构描述了Java运行时系统的内部错误和资源耗尽错误
+					应用程序不应该抛出这种类型的对象
+				Exception
+					该层次结构又分为两大分支
+						RuntimeException
+							错误的类型转换
+							数组访问越界
+							访问Null指针
+						其他异常
+							试图在文件尾部后面读取数据
+							试图打开一个不存在的文件
+					由程序错误导致的异常属于RuntimeException，如果程序本身没有问题，但由于像I/O错误这类问题导致的异常，属于其他异常
+					如果出现RuntimeException异常，就是程序员的程序问题了
+					应该通过检测数组下标是否越界来避免ArrayIndxOutOfBoundsException异常
+					应该通过在使用变量之前检测是否为null来杜绝NullPointerException异常
+			Error类或RuntimeException类的所有异常称为非受查(unchecked)异常
+			所有其他的异常称为受查(checked)异常
+		7.1.2 声明受查异常
+			一个方法不仅需要告诉编译器将要返回什么值，还要告诉编译器有可能发生什么错误
+				public FileInputStream(String name) throws FileNotFoundException
+				该声明表示这个构造器将根据给定的String参数产生一个FileInputStream对象，
+				但也可能抛出一个 FileNotFoundException 异常
+				如果出现这种情况，构造器不会初始化一个新的 FileInputStream对象
+				而是抛出一个 FileNotFoundException 类对象
+				如果抛出这样的一个异常对象，运行时系统会开始搜索异常处理器来处理该对象
+				何时需要抛出异常
+					调用一个抛出受查异常的方法，例如 FileInputStream
+					程序运行过程中发现错误，并利用throw语句抛出受查异常
+					程序出现错误
+					java虚拟机和运行时库出现内部错误
+				对应那些可能被他人使用的Java方法，应该根据异常规范，在方法的首部声明这个方法可能抛出的异常
+					public Image loadImg(String s) throw IOException{}
+					public Image loadImg(String s) throw FileNotFoundException,IOException{}
+				不需要声明Java的内部错误，即从Error继承的错误
+			除了声明异常之外，还可以捕获异常
+			这样会使异常不被抛到方法之外，也不需要throws规范
+		7.1.3 如果抛出异常
+			throw new EOFException();
+			找到一个合适的异常类
+			创建这个类的额一个对象
+			将对象抛出
+		7.1.4 创建异常类
+			定义一个派生于Exception的类，或者派生于Exception子类的的类
+			习惯上，定义类应该包含两个构造器，一个是默认的构造器，另一个是带有详细描述信息
+			class FileFormatException extends IOException{
+				public FileFormatException(){}
+				public FileFormatException(String gripe){
+					super(gripe);
+				}
+			}
+	7.2 捕获异常
+		如果某个异常发生的时候没有在任何地方进行捕获，那程序就会终止执行，并在控制台上打印出异常信息
+		其中包括异常的类型和堆栈的内容
+		7.2.1 捕获异常
+			要想捕获异常，必须设置try/catch语句块
+				try{
+					
+				}catch(Exception e){
+					e.getMessage();
+				}
+			如果在try语句块中的任何代码抛出类一个在catch子句中说明的异常类，那么
+				程序将跳过try语句块的其余代码
+				程序将执行catch子句中的处理器代码
+			如果方法中的任何代码抛出类一个在catch子句中没有声明的异常类型，那么这个方法就会立刻退出
+		7.2.2 捕获多个异常
+			在一个try语句中可以捕获多个异常类型，并作出不同处理
+			try{
+				
+			}catch(FileNotFoundException e){
+				e.getMessage();
+			}catch(IOException e){
+				e.getMessage();
+			}
+		7.2.3 再次抛出异常与异常链
+			在catch子句中可以抛出一个异常，这样做得目的是改变异常的类型
+		7.2.4 finally子句
+			不管是否有异常被捕获，finally子句中的代码都被执行
+			InputStream in = new FileInputStream(...);
+			try{
+				
+			}catch(Exception e){
+				e.getMessage();
+			}finally{
+				in.close();
+			}
+		7.2.6 分析堆栈轨迹元素
+	7.3 使用异常机制的技巧
+		异常处理不能代替简单的测试
+		不要过分的细化异常
+		利用异常层次结构
+		不要压制异常
+		在检测错误时，苛刻要比放任好
+	7.4 使用断言
+		在一个具有自我保护能力的程序中，断言很常用
+		断言机制运行在测试期间向代码中插入一下检测语句，当代码发布时，这些插入的检测语句将会被自动移走，减少资源消耗
+			assert x>=0 : x;
+		默认情况下，断言被禁用，可以在运行程序时启用
+			java -enableassertions MyApp
+	7.5 记录日志
+		7.5.1 基本日志
+			要生成简单的日志记录，可以使用全局日志记录器并调用其info方法
+				Logger.getGlobal().info("hello");
+			如果在适当的地方调用
+				Logger.getGlobal().setLevel(Level.OFF)
+				将会取消所有的日志
+		7.5.2 高级日志
+			可以调用getLogger方法创建或获取记录器
+				private static final Logger myLogger = Logger.getLogger("com.mycompany.myapp");
+			日志记录器级别
+				SEVERE WARNING INFO CONFIG FINE FINER FINEST
+			默认情况下只记录前三个级别
+			也可以设置其他的级别
+				logger.setLevel(Level.FINE);
+			可以使用level.ALL开启所有级别的记录，也可以使用Level.OFF关闭所有级别
+			对于所有的级别有下面几种记录方法
+				logger.warning(message)
+				logger.fine(message)
+			也可以指定级别
+				logger.log(Level.FINE,message);
+			默认的日志配置记录了INFO或更高级别的所有记录
+			如果将记录级别设计为INFO或者更低，则需要修改日志处理器的配置
+		7.5.3 修改日志管理器配置
+			可以通过编辑配置文件来修改日志系统的各种属性，配置文件存在于
+				jre/lib/logging.properties
+	7.6 调试技巧
+		可以使用下面的方法打印或记录任意变量
+			System.out.println("x=" + x);
+			或
+			Logger.getGlobal().info("x" + x);
+		日志代理
+		利用Throwable类提供的printStackTrace方法，可以从任何一个异常对象中获得堆栈情况
+			try{
+				
+			}catch(Throwable t){
+				t.printStackTrace();
+				throw t;
+			}
+		错误信息被发送到System.err中，而不是System.out中
+			java MyProgram 2>errors.txt
+		要想观察类的加载过程，可以用-verbose标志启动java虚拟机
+		Java虚拟机增加类对Java应用程序进行监控和管理的支持
+			JDK加载类了一个称为jconsole的图形工具，可以用于显示虚拟机性能的统计结果
+				找出运行虚拟机的操作系统进程ID
+				在UNIX/LINUX环境下运行ps，
+				在windows环境下使用任务管理器，然后运行jconsole程序
+					jconsole processID
 }
 
 第八章 泛型程序设计
 
 {
-	
+	8.1 为什么使用泛型程序设计
+		泛型程序设计意味着编写的额代码可以被很多不同类型的对象所重用
+		ArrayList<String> files = new ArrayList<String>();
+		这个数组列表中包含的是String对象
+		不需要强制类型转换，避免插入错误类型的对象
+	8.2 定义简单的泛型类
+		一个泛型类就是具有一个或多个类型变量的的类
+		public class Pair<T>{
+			private T first;
+			private T second;
+			public Pair(T first,T second){
+				this.first =first;
+				this.second = second;
+			}
+			public T getFirst(){
+				return first;
+			}
+		}
+		如果第一个域和第二个域使用不同类型
+			public class Pair<T,U>{}
+	8.3 泛型方法
+	8.4 类型变量的限定
+	8.5 泛型代码和虚拟机
+	8.6 约束与局限性
+	8.7 泛型类型的继承规则
+	8.8 通配符类型
+	8.9 反射和泛型
 }
 
 第九章 集合
 
 {
-	
+	在实现方法时，选择不同的数据结构会导致其实现风格以及性能存在很大差异
+	9.1 Java集合框架
+		9.1.1 将集合的接口与实现分离
+		9.1.2 Collection接口
+			在Java中，集合类的基本接口时Collection接口，这个接口有两个基本方法
+				public interface Collection<E>{
+					boolean add(E element);
+					Iterator<E> iterator();
+				}
+				add用于向集合添加元素，如果添加元素确实改变类集合就返回true,否则返回false
+				iterator方法用于返回一个实现类Iterator接口的对象，可以使用这个迭代器依次访问集合中的元素
+		9.1.3 迭代器
+			Iterator接口包含4个方法
+				public interface Iterator<E>{
+					E next;
+					boolean hasNext();
+					void remove();
+					default void forEachremaining(Consumer<? super E> action)
+				}
+			例如：
+				Collection<String> c="...";
+				Iterator<String> iter = c.iterator();
+				while(iter.hasNext()){
+					String element = iter.next();
+					//dosomething
+				}
+				使用for each循环更加简练
+				for(String element: c){
+					//do something
+				}
+			remove方法将会删除上次调用next方法时返回的元素
+		API:java.util.Collection<E>
+			iterator(),size(),isEmpty(),contains(Object obj),add(Object element),addAll(Collection<?> other)
+			remove(Object obj),removeAll(Collection<?> other),clear()retainAll()toArray()...
+		API:java.util.iterator<E>
+			hasNext(),next(),remove()
+		集合有两个基本接口：Collection和Map
+			Map使用put添加元素使用get获取元素
+	9.2 具体的集合
+		除了以Map结尾的类之外，其他类都实现类Collection接口
+		而以Map结尾的类实现类Map接口
+			ArrayList --一种可以动态增长和缩减的索引序列
+			LinkerdList--一种可以在任何位置进行高效地插入和删除操作的有序序列
+			ArrayDeque--一种用循环数组实现的双端队列
+			HashSet--一种没有重复元素的无序集合
+			TreeSet--一种有序集
+			EnumSet--一种保护枚举类型值的集
+			LinkedHashSet--一种可以记住元素插入次序的集合
+			PriorityQueuq
+			HashMap--一种存储键值关联的数据结构
+			TreeMap--一种键值有序排列的映射表
+			EnumMap
+			LinkedHashMap
+			WeakHashMap
+			IdentityHashMap
+	9.3 映射
+		Map<String,Employee> staff = new HashMap<>();
+		Employee harry = new Employee("harry hacker");
+		staff.put("987-98",harry);
+		staff.get("987-98");
+		staff.remove("987-98");
+		staff.forEach()
+	9.4 视图与包装器
+		9.4.1 轻量级集合包装器
+			Arrays类的静态方法asList将返回一个包装类普通Java数组的List包装器
+				Card[] card = new Card[52];
+				List<Card> cardList = Arrays.asList(card);
+	9.5 算法
+		9.5.1 排序与混排
+			Collection类中的sort方法可以对实现类List接口的集合进行排序
+				List<String> staff = new LinkedList<>();
+				Collection.sort(staff);
+		9.5.2 二分查找
+			Coll类的binarySearch方法实现类这个算法
+			注意，集合必须是排好序的，否则答案可能会错
+		9.5.3 简单算法
+			Collection.replaceAll("c++","java");
+			Collection.removeIf(w->w.length() <=3);
+	9.6 遗留的集合
 }
 
 第十章 图形程序设计
@@ -707,5 +1014,56 @@ Java核心技术卷I
 第十四章 并发
 
 {
-	
+	操作系统中的多任务(multitasking):在同一时刻运行多个程序的能力
+	多线程程序在较低的层次上扩展类多任务的概念：一个程序同时执行多个任务。
+	通常每一个任务称为一个线程(thread),它是线程控制的简称。
+	多进程与多线程区别：
+		每个进程拥有自己的一整套变量，而线程则共享数据。
+	例如：一个浏览器可以同时下载多个图片，一个web服务器需要同时处理多个并发的请求
+	14.1 什么是线程
+		Thread t = new Thread();
+		t.start();
+	14.2 中断线程
+		Java早起版本中，有stop方法，其他线程和以调用它终止线程，但是这个方法被弃用了
+		没有可以强制线程终止的方法，然而interrupt方法可以用来请求终止线程
+		Thread.currentThread.isInterrupted
+		如果线程被阻塞，就无法检测中断状态
+	14.3 线程状态
+		New(新建),Runnable(可运行),blocked(被阻塞),Waiting(等待),Timed waiting(计时等待),Terminated(终止)
+		14.3.1 新创建线程
+			new Thread();
+			该线程还没有开始运行，它的状态是new
+		14.3.2 可运行线程
+			一旦调用start方法，线程处于runnable状态
+			一个可运行的线程可能正在运行也可能没有运行，取决于操作系统给线程提供运行的时间
+		14.3.3 被阻塞线程和等待线程
+			当线程处于被阻塞和等待状态时，它暂时不活动，它不运行任何代码且消耗最少的资源
+				当一个线程试图获取一个内部的对象锁(不是java.util.concurrent库中的锁)，而该锁被其他线程持有，则该 线程进入阻塞状态
+				当线程等待另一个线程通知调度器一个条件时，它进入等待状态
+				有几个方法有一个超时参数，调用他们导致线程进入计时等待状态
+		14.3.4 被终止的线程
+			因为run方法正常退出而自然死亡
+			因为一个没有捕获的异常终止类run方法而意外死亡
+	14.4 线程属性
+		14.4.1 线程优先级
+			一个线程继承它的父类线程的优先级，可以使用setPriority方法提高或降低一个线程的优先级
+			每当线程调度器有机会选择新线程时，它首先选择具有较高优先级的线程
+			如果有几个高级优先级的线程没有进入非活动状态，低优先级的线程可能永远也不能执行
+		14.4.2 守护线程
+			t.setDaemon(true);
+			唯一用途是为其他线程提供服务
+	14.5 同步
+		为了避免多线程引起的对共享数据的讹误，必须学习如何同步存取。
+		14.5.3 锁对象
+			有两种机制防止代码块收并发访问的干扰
+				Java语言提供类一个synchronized关键字达到这一目的
+				Java SE5.0引入了 ReentrantLock类
+			lock(),unlock()
+	14.6 阻塞队列
+	14.7 线程安全的集合
+		ConcurrentHashMap,ConcurrentSkipListMap
+	14.8 Callable与future
+	14.9 执行器
+	14.10 同步器
+	14.11 线程与Swing
 }
